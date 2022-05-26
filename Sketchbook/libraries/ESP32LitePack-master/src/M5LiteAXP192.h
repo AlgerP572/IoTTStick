@@ -169,6 +169,14 @@ class M5LiteAXP192 {
       }
     }
 
+    void setEXTEN(bool state)
+    {
+      if (!enable) {
+        return;
+      }
+      _axp192->setEXTEN(state);
+    }
+
     uint8_t readByte(uint8_t address) {
       _i2cPort->beginTransmission(_deviceAddress);
       _i2cPort->write(address);
