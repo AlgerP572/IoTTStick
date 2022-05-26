@@ -1,3 +1,4 @@
+#define LGFX_USE_V1
 #include <LovyanGFX.hpp>
 
 static LGFX lcd;
@@ -9,6 +10,10 @@ static int32_t width = 239;             // 画像サイズ
 static int32_t halfwidth = width >> 1;  // 中心座標
 static auto transpalette = 0;           // 透過色パレット番号
 static float zoom;                      // 表示倍率
+
+#ifdef min
+#undef min
+#endif
 
 void setup(void)
 {

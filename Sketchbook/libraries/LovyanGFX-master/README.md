@@ -1,14 +1,23 @@
 # LovyanGFX
 
-LCD graphics library (for ESP32 SPI or 8bit Parallel / ATSAMD51 SPI).  
+[![arduino-library-badge](https://www.ardu-badge.com/badge/LovyanGFX.svg?)](https://www.ardu-badge.com/LovyanGFX)
+[![PlatformIO Registry](https://badges.registry.platformio.org/packages/lovyan03/library/LovyanGFX.svg)](https://registry.platformio.org/packages/libraries/lovyan03/LovyanGFX)
+
+[![Arduino](https://github.com/lovyan03/LovyanGFX/actions/workflows/ArduinoBuild.yml/badge.svg?branch=master)](https://github.com/lovyan03/LovyanGFX/actions/workflows/ArduinoBuild.yml)
+[![Platformio](https://github.com/lovyan03/LovyanGFX/actions/workflows/PlatformioBuild.yml/badge.svg?branch=master)](https://github.com/lovyan03/LovyanGFX/actions/workflows/PlatformioBuild.yml)
+[![esp-idf](https://github.com/lovyan03/LovyanGFX/actions/workflows/IDFBuild.yml/badge.svg?branch=master)](https://github.com/lovyan03/LovyanGFX/actions/workflows/IDFBuild.yml)
+
+
+
+Display (LCD / OLED / EPD) graphics library (for ESP32 SPI, I2C, 8bitParallel / ESP8266 SPI, I2C / ATSAMD51 SPI).  
 M5Stack / M5StickC / TTGO T-Watch / ODROID-GO / ESP-WROVER-KIT / WioTerminal / and more...  
 [![examples](http://img.youtube.com/vi/SMOHRPqUZcQ/0.jpg)](http://www.youtube.com/watch?v=SMOHRPqUZcQ "examples")
 [![examples](http://img.youtube.com/vi/F5gsp41Elac/0.jpg)](http://www.youtube.com/watch?v=F5gsp41Elac "MultiPanel")
 
 概要 Overview.
 ----------------
-ESP32とSPIまたは8ビットパラレル接続のLCD / ATSAMD51とSPI接続のLCDの組み合わせで動作するグラフィックライブラリです。  
-This is a graphics library that works with a combination of ESP32 with SPI or 8-bit parallel connection and ATSAMD51 with SPI connection to the LCD. (see compatibility list below).
+ESP32とSPI, I2C, 8ビットパラレル接続のディスプレイ / ESP8266とSPI接続のディスプレイ / ATSAMD51とSPI接続のディスプレイの組み合わせで動作するグラフィックライブラリです。  
+This is a graphics library that works with a combination of ESP32 with SPI, I2C, 8-bit parallel / ESP8266 with SPI / ATSAMD51 with SPI  to the Display. (see compatibility list below).
 
  [AdafruitGFX](https://github.com/adafruit/Adafruit-GFX-Library) や [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) と互換性をある程度持ちつつ、より高機能・高速動作を目標としています。  
 
@@ -16,17 +25,35 @@ This library mimics [AdafruitGFX](https://github.com/adafruit/Adafruit-GFX-Libra
   
 既存のライブラリに対して、以下のアドバンテージがあります。  
   - ArduinoESP32 / ESP-IDF 対応  
-  - 16bit / 24bitカラーモード両対応(実際の色数はLCDの仕様によります)  
+  - 16bit / 24bitカラーモード両対応(実際の色数はディスプレイの仕様によります)  
   - DMA転送を用いた通信動作中の別処理実行  
   - オフスクリーンバッファ（スプライト）の高速な回転/拡縮描画  
-  - 複数LCDの同時利用  
+  - 複数ディスプレイの同時利用  
+  - モノクロディスプレイに対する減色描画の自動処理  
+  - OpenCVを描画先として利用でき、PC上で動作可能  
 
 This library has the following advantages.
   - ArduinoESP32 and ESP-IDF are supported.
-  - Both 16bit and 24bit color modes are supported. (actual number of colors depends on LCD specifications)
+  - Both 16bit and 24bit color modes are supported. (actual number of colors depends on display specifications)
   - Execute another process during communication operation using DMA transfer.
   - Fast rotation/expansion of the off-screen buffer (sprite).
-  - Simultaneous use of multiple LCDs.
+  - Simultaneous use of multiple displays.
+  - Automatic processing of color reduction drawing for monochrome displays.
+  - OpenCV can be used as a drawing destination and can run on a PC.  
+
+
+|        | SPI | I2C | 8bit Para |16bit Para |
+|:------:|:---:|:---:|:---------:|:---------:|
+|ESP32   | HW  | HW  | HW (I2S)  | ---       |
+|ESP32-S2| HW  | HW  | HW (I2S)  | HW (I2S)  |
+|ESP32-S3| HW  | HW  |HW(LCD/CAM)|HW(LCD/CAM)|
+|ESP32-C3| HW  | HW  | SW        | ---       |
+|ESP8266 | HW  | SW  | ---       | ---       |
+|SAMD51  | HW  | HW  | ---       | ---       |
+|SAMD21  | HW  | HW  | ---       | ---       |
+|RP2040  | HW  | --- | ---       | ---       |
+
+※ HW = HardWare Peripheral / SW = SoftWare implementation
 
 
 対応環境 support environments
@@ -35,32 +62,50 @@ This library has the following advantages.
     - ESP-IDF
     - Arduino ESP32
     - Arduino ATSAMD51 (Seeed)
-    - PlatformIO
+    - Arduino RP2040
 
   - ディスプレイ Displays
+    - GC9A01
+    - GDEW0154M09 (M5Stack CoreInk)
     - HX8357
     - ILI9163
+    - ILI9225
     - ILI9341 (WioTerminal, ESP-WROVER-KIT, ODROID-GO, LoLin D32 Pro, WiFiBoy Pro)
-    - ILI9342 (M5Stack, M5Stack Core2)
+    - ILI9342 (M5Stack, M5Stack Core2, ESP32-S3-BOX)
+    - ILI9481
     - ILI9486
     - ILI9488 (Makerfabs Touch with Camera)
-    - SSD1351
-    - ST7735 (M5StickC, TTGO T-Wristband, TTGO TS, LoLin D32 Pro, WiFiBoy mini)
+    - IT8951 (M5Paper)
+    - RA8875
+    - SH110x (SH1106, SH1107, M5Stack Unit OLED)
+    - SSD1306 (SSD1309)
+    - SSD1327
+    - SSD1331
+    - SSD1351 (SSD1357)
+    - SSD1963
+    - ST7735 (M5StickC, TTGO T-Wristband, TTGO TS, LoLin D32 Pro, WiFiBoy mini, ESPboy, PyBadge)
     - ST7789 (M5StickCPlus, TTGO T-Watch, ESP-WROVER-KIT, Makerfabs MakePython, DSTIKE D-duino-32 XS)
-    - ST7796
+    - ST7796 (WT32-SC01)
 
-  - タッチパネル TouchScreens (only ESP32)
-    - I2C FT5x06 / FT6x36
+    - M5Stack Unit LCD
+    - M5Stack AtomDisplay
+
+  - タッチスクリーン TouchScreens
+    - I2C FT5x06 (FT5206, FT5306, FT5406, FT6206, FT6236, FT6336, FT6436)
+    - I2C GSLx680 (GSL1680)
+    - I2C GT911
+    - I2C NS2009
+    - I2C TT21xxx (TT21100)
     - SPI XPT2046
     - SPI STMPE610
 
 
-対応機種については[src/lgfx/panel](src/lgfx/panel)をご参照ください。  
-接続するピンの初期設定は[src/LovyanGFX.hpp](src/LovyanGFX.hpp)にあります。  
-上記対応機種とコマンド体系の類似したLCDパネルであれば対応可能ですが、当方で入手し動作確認が取れたもののみ正式対応としています。  
+設定方法のサンプルは[src/lgfx_user](src/lgfx_user)にあります。  
+上記対応機種とコマンド体系の類似したディスプレイであれば対応可能ですが、当方で入手し動作確認が取れたもののみ正式対応としています。  
 対応要望を頂けた機種には優先的に対応を検討致します。  
   
-This library is also compatible with the above models and LCD panels with a similar command system,
+setting examples is [src/lgfx_user](src/lgfx_user)  
+This library is also compatible with the above models and display panels with a similar command system,
  but only those that have been obtained and confirmed to work are officially supported.  
 
 使い方 How to use
@@ -77,10 +122,13 @@ This library is also compatible with the above models and LCD panels with a simi
 // #define LGFX_M5STACK_CORE2         // M5Stack Core2
 // #define LGFX_M5STACK_COREINK       // M5Stack CoreInk
 // #define LGFX_M5STICK_C             // M5Stick C / CPlus
+// #define LGFX_M5PAPER               // M5Paper
+// #define LGFX_M5TOUGH               // M5Tough
 // #define LGFX_ODROID_GO             // ODROID-GO
 // #define LGFX_TTGO_TS               // TTGO TS
 // #define LGFX_TTGO_TWATCH           // TTGO T-Watch
 // #define LGFX_TTGO_TWRISTBAND       // TTGO T-Wristband
+// #define LGFX_TTGO_TDISPLAY         // TTGO T-Display
 // #define LGFX_DDUINO32_XS           // DSTIKE D-duino-32 XS
 // #define LGFX_LOLIN_D32_PRO         // LoLin D32 Pro
 // #define LGFX_ESP_WROVER_KIT        // ESP-WROVER-KIT
@@ -88,15 +136,25 @@ This library is also compatible with the above models and LCD panels with a simi
 // #define LGFX_WIFIBOY_MINI          // WiFiBoy mini
 // #define LGFX_MAKERFABS_TOUCHCAMERA // Makerfabs Touch with Camera
 // #define LGFX_MAKERFABS_MAKEPYTHON  // Makerfabs MakePython
-// #define LGFX_WIO_TERMINAL          // Wio Terminal
+// #define LGFX_WT32_SC01             // Seeed WT32-SC01
+// #define LGFX_WIO_TERMINAL          // Seeed Wio Terminal
+// #define LGFX_PYBADGE               // Adafruit PyBadge
+// #define LGFX_ESPBOY                // ESPboy
 
-// #define LGFX_AUTODETECT // 自動認識 (M5Stack, M5StickC/CPlus, ODROID-GO, TTGO T-Watch, TTGO T-Wristband, LoLin D32 Pro, ESP-WROVER-KIT)
+  #define LGFX_AUTODETECT // 自動認識 (D-duino-32 XS, PyBadge はパネルID読取りが出来ないため自動認識の対象から外れています)
 
 // 複数機種の定義を行うか、LGFX_AUTODETECTを定義することで、実行時にボードを自動認識します。
 
 
+// v1.0.0 を有効にします(v0からの移行期間の特別措置です。これを書かない場合は旧v0系で動作します。)
+#define LGFX_USE_V1
+
+
 // ヘッダをincludeします。
 #include <LovyanGFX.hpp>
+
+#include <LGFX_AUTODETECT.hpp>  // クラス"LGFX"を用意します
+// #include <lgfx_user/LGFX_ESP32_sample.hpp> // またはユーザ自身が用意したLGFXクラスを準備します
 
 static LGFX lcd;                 // LGFXのインスタンスを作成。
 static LGFX_Sprite sprite(&lcd); // スプライトを使う場合はLGFX_Spriteのインスタンスを作成。
@@ -107,9 +165,8 @@ static LGFX_Sprite sprite(&lcd); // スプライトを使う場合はLGFX_Sprite
 // static TFT_eSprite sprite(&lcd);   // TFT_eSpriteがLGFX_Spriteの別名として定義されます。
 
 
-// 対応機種に無い構成で使う場合は、 examples/HowToUse/2_spi_setting.ino を参照してください。
-// configフォルダのLGFX_Config_Custom.hppをコピーして環境に合わせて編集して、
-// ここでincludeをするか、ファイルの内容をそのまま貼り付けて使用してください。
+// 対応機種に無い構成で使う場合は、 examples/HowToUse/2_user_setting.ino を参照してください。
+// また設定例はsrc/lgfx_userフォルダにもあります。
 
 
 void setup(void)
@@ -123,7 +180,7 @@ void setup(void)
 
 
 // バックライトの輝度を 0～255 の範囲で設定します。
-  lcd.setBrightness(255); // の範囲で設定
+  lcd.setBrightness(128);
 
 
 // 必要に応じてカラーモードを設定します。（初期値は16）
@@ -133,15 +190,9 @@ void setup(void)
   lcd.setColorDepth(24);  // RGB888の24ビットに設定(表示される色数はパネル性能によりRGB666の18ビットになります)
 
 
-// clearまたはfillScreenで画面全体を塗り潰します。
-// どちらも同じ動作をしますが、clearは引数を省略でき、その場合は黒で塗り潰します。
-  lcd.fillScreen(0);  // 黒で塗り潰し
-  lcd.clear(0xFFFF);  // 白で塗り潰し
-  lcd.clear();        // 黒で塗り潰し
-
-
 // 基本的な図形の描画関数は以下の通りです。
 /*
+  fillScreen    (                color);  // 画面全体の塗り潰し
   drawPixel     ( x, y         , color);  // 点
   drawFastVLine ( x, y   , h   , color);  // 垂直線
   drawFastHLine ( x, y, w      , color);  // 水平線
@@ -206,30 +257,44 @@ void setup(void)
 
 
 // 描画関数の引数の色は省略できます。
-// 省略した場合、setColor関数で設定した色 または最後に使用した色で描画できます。
+// 省略した場合、setColor関数で設定した色 または最後に使用した色を描画色として使用します。
 // 同じ色で繰り返し描画する場合は、省略した方がわずかに速く動作します。
-  lcd.setColor(0xFF0000U);                        // 赤色を指定
+  lcd.setColor(0xFF0000U);                        // 描画色に赤色を指定
   lcd.fillCircle ( 40, 80, 20    );               // 赤色で円の塗り
   lcd.fillEllipse( 80, 40, 10, 20);               // 赤色で楕円の塗り
   lcd.fillArc    ( 80, 80, 20, 10, 0, 90);        // 赤色で円弧の塗り
   lcd.fillTriangle(80, 80, 60, 80, 80, 60);       // 赤色で三角の塗り
-  lcd.setColor(0x0000FFU);                        // 青色を指定
+  lcd.setColor(0x0000FFU);                        // 描画色に青色を指定
   lcd.drawCircle ( 40, 80, 20    );               // 青色で円の外周
   lcd.drawEllipse( 80, 40, 10, 20);               // 青色で楕円の外周
   lcd.drawArc    ( 80, 80, 20, 10, 0, 90);        // 青色で円弧の外周
   lcd.drawTriangle(60, 80, 80, 80, 80, 60);       // 青色で三角の外周
-  lcd.setColor(0x00FF00U);                        // 緑色を指定
+  lcd.setColor(0x00FF00U);                        // 描画色に緑色を指定
   lcd.drawBezier( 60, 80, 80, 80, 80, 60);        // 緑色で二次ベジエ曲線
   lcd.drawBezier( 60, 80, 80, 20, 20, 80, 80, 60);// 緑色で三次ベジエ曲線
 
-
 // グラデーションの線を描画するdrawGradientLine は色の指定を省略できません。
   lcd.drawGradientLine( 0, 80, 80, 0, 0xFF0000U, 0x0000FFU);// 赤から青へのグラデーション直線
+
+  delay(1000);
+
+// clearまたはfillScreenで画面全体を塗り潰せます。
+// fillScreenはfillRectの画面全体を指定したのと同じで、色の指定は描画色の扱いになります。
+  lcd.fillScreen(0xFFFFFFu);  // 白で塗り潰し
+  lcd.setColor(0x00FF00u);    // 描画色に緑色を指定
+  lcd.fillScreen();           // 緑で塗り潰し
+
+// clearは描画系の関数とは別で背景色という扱いで色を保持しています。
+// 背景色は出番が少ないですが、スクロール機能使用時の隙間を塗る色としても使用されます。
+  lcd.clear(0xFFFFFFu);       // 背景色に白を指定して塗り潰し
+  lcd.setBaseColor(0x000000u);// 背景色に黒を指定
+  lcd.clear();                // 黒で塗り潰し
 
 
 // SPIバスの確保と解放は描画関数を呼び出した時に自動的に行われますが、
 // 描画スピードを重視する場合は、描画処理の前後に startWriteとendWriteを使用します。
 // SPIバスの確保と解放が抑制され、速度が向上します。
+// 電子ペーパー(EPD)の場合、startWrite()以降の描画は、endWrite()を呼ぶ事で画面に反映されます。
   lcd.drawLine(0, 1, 39, 40, red);       // SPIバス確保、線を描画、SPIバス解放
   lcd.drawLine(1, 0, 40, 39, blue);      // SPIバス確保、線を描画、SPIバス解放
   lcd.startWrite();                      // SPIバス確保
@@ -268,7 +333,7 @@ void setup(void)
   lcd.endWrite();         // カウント-1
   lcd.endWrite();         // カウント-1、SPIバス解放
 
-  delay(1000);
+
 
 // drawPixelとは別に、writePixelという点を描画する関数があります。
 // drawPixelは必要に応じてSPIバスの確保を行うのに対し、
@@ -276,7 +341,7 @@ void setup(void)
   lcd.startWrite();  // SPIバス確保
   for (uint32_t x = 0; x < 128; ++x) {
     for (uint32_t y = 0; y < 128; ++y) {
-      lcd.writePixel(x, y, lcd.color888(255 - x*2, x + y, 255 - y*2));
+      lcd.writePixel(x, y, lcd.color888( x*2, x + y, y*2));
     }
   }
   lcd.endWrite();    // SPIバス解放
@@ -305,7 +370,7 @@ void setup(void)
 
   for (uint32_t x = 0; x < 64; ++x) {
     for (uint32_t y = 0; y < 64; ++y) {
-      sprite.drawPixel(x, y, lcd.color888(255 - x*4, (x + y)*2, 255 - y*4));  // スプライトに描画
+      sprite.drawPixel(x, y, lcd.color888(3 + x*4, (x + y)*2, 3 + y*4));  // スプライトに描画
     }
   }
   sprite.drawRect(0, 0, 65, 65, 0xFFFF);
@@ -325,9 +390,13 @@ void setup(void)
   sprite.setPivot(32, 32);    // 座標32,32を中心として扱う
   int32_t center_x = lcd.width()/2;
   int32_t center_y = lcd.height()/2;
+  lcd.startWrite();
   for (int angle = 0; angle <= 360; ++angle) {
     sprite.pushRotateZoom(center_x, center_y, angle, 2.5, 3); // 画面中心に角度angle、幅2.5倍、高さ3倍で描画
+
+    if ((angle % 36) == 0) lcd.display(); // 電子ペーパーの場合の表示更新を 36回に一度行う
   }
+  lcd.endWrite();
 
   delay(1000);
 
@@ -359,6 +428,8 @@ void setup(void)
   sprite.pushSprite(65, 65, 3);  // パレット3を透過扱いでスプライトを描画
 
   delay(5000);
+
+  lcd.startWrite(); // ここでstartWrite()することで、SPIバスを占有したままにする。
 }
 
 void loop(void)
@@ -377,6 +448,8 @@ void loop(void)
   sprite.setPaletteColor(3, lcd.color888( count & 0xFF, 0, 0));
 
   sprite.pushRotateZoom(x, y, a, zoom, zoom, 0);
+
+  if ((count % 100) == 0) lcd.display(); // 電子ペーパーの場合の表示更新を 100回に一度行う
 }
 ```
 
@@ -406,11 +479,13 @@ TFT_eSPIのベースとなった、[AdafruitGFX](https://github.com/adafruit/Ada
 [TJpgDec](http://elm-chan.org/fsw/tjpgd/00index.html) (Tiny JPEG Decompressor) の作者 [ChaN](http://elm-chan.org/)氏へ感謝いたします。  
 [Pngle](https://github.com/kikuchan/pngle) (PNG Loader for Embedding) の作者 [kikuchan](https://github.com/kikuchan/)氏へ感謝いたします。  
 [QRCode](https://github.com/ricmoo/QRCode/) (QR code generation library) の作者 [Richard Moore](https://github.com/ricmoo/)氏へ感謝いたします。  
-多くの技術的なアドバイスやESP-IDF環境での検証に協力してくれた[ciniml](https://github.com/ciniml)氏へ感謝いたします。  
+多くの技術的なアドバイスやESP-IDF環境での検証に協力してくださった[ciniml](https://github.com/ciniml)氏へ感謝いたします。  
 不具合の多い開発初期からの動作検証および多数の助言をくださった[mongonta0716](https://github.com/mongonta0716)氏へ感謝いたします。  
 多数のボードでの動作検証や英語への翻訳および多数の助言をくださった[tobozo](https://github.com/tobozo)氏へ感謝いたします。  
 フォントデータの作成に協力してくださった[TANAKA Masayuki](https://github.com/tanakamasayuki)氏へ感謝いたします。  
 [日本語フォントサブセットジェネレーター](https://github.com/yamamaya/lgfxFontSubsetGenerator)を製作してくださった[YAMANEKO](https://github.com/yamamaya)氏へ感謝いたします。  
+Raspberry pi pico (RP2040)対応に協力してくださった[yasuhirok](https://github.com/yasuhirok-git)氏へ感謝いたします。  
+Linux FrameBuffer対応に協力してくださった[IAMLIUBO](https://github.com/imliubo)氏へ感謝いたします。  
 
 Thanks to [Bodmer](https://github.com/Bodmer/), author of the [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) library, for the inspiration to create this library.  
 Thanks to [Adafruit Industries](https://github.com/adafruit/) for publishing [AdafruitGFX](https://github.com/adafruit/Adafruit-GFX-Library), which is the basis for TFT_eSPI.  
@@ -422,13 +497,15 @@ Thanks to [mongonta0716](https://github.com/mongonta0716), for verifying the wor
 Thanks to [tobozo](https://github.com/tobozo), for testing it on various boards, translating it into English and giving me a lot of advice.  
 Thanks to [TANAKA Masayuki](https://github.com/tanakamasayuki), for creating the font data.  
 Thanks to [YAMANEKO](https://github.com/yamamaya), for creating the [lgfxFontSubsetGenerator](https://github.com/yamamaya/lgfxFontSubsetGenerator).  
+Thanks to [yasuhirok](https://github.com/yasuhirok-git), for add Raspberry pi pico (RP2040) support.  
+Thanks to [IAMLIUBO](https://github.com/imliubo), for add Linux FrameBuffer support.  
 
 
 使用ライブラリ included library  
 ----------------
 [TJpgDec](http://elm-chan.org/fsw/tjpgd/00index.html)  [ChaN](http://elm-chan.org/)  
 [Pngle](https://github.com/kikuchan/pngle)  [kikuchan](https://github.com/kikuchan/)  
-[QRCode](https://github.com/ricmoo/QRCode/)  [Richard Moore](https://github.com/ricmoo/)
+[QRCode](https://github.com/ricmoo/QRCode/)  [Richard Moore](https://github.com/ricmoo/) and [Nayuki](https://www.nayuki.io/page/qr-code-generator-library)  
 
 
 クレジット Credits
@@ -444,8 +521,23 @@ Thanks to [YAMANEKO](https://github.com/yamamaya), for creating the [lgfxFontSub
 ライセンス License
 ----------------
 main : [FreeBSD](license.txt)  
+TJpgDec : [original](src/lgfx/utility/lgfx_tjpgd.c) ChaN  
+Pngle : [MIT](https://github.com/kikuchan/pngle/blob/master/LICENSE) kikuchan  
+QRCode : [MIT](https://github.com/ricmoo/QRCode/blob/master/LICENSE.txt) Richard Moore and Nayuki  
+result : [MIT](https://github.com/bitwizeshift/result/blob/master/LICENSE) Matthew Rodusek  
 GFX font and GLCD font : [2-clause BSD](https://github.com/adafruit/Adafruit-GFX-Library/blob/master/license.txt) Adafruit Industries  
 Font 2,4,6,7,8 :  [FreeBSD](https://github.com/Bodmer/TFT_eSPI/blob/master/license.txt) Bodmer  
-converted IPA font : [IPA Font License](src/Fonts/IPA/IPA_Font_License_Agreement_v1.0.txt)  
+converted IPA font : [IPA Font License](src/lgfx/Fonts/IPA/IPA_Font_License_Agreement_v1.0.txt) IPA  
+efont : [3-clause BSD](src/lgfx/Fonts/efont/COPYRIGHT.txt) The Electronic Font Open Laboratory  
+TomThumb font : [3-clause BSD](src/lgfx/Fonts/GFXFF/TomThumb.h) Brian J. Swetland / Vassilii Khachaturov / Dan Marks  
+
+
+実装予定 Unimplemented request
+----------------
+  - ディスプレイ Displays
+    - OTM8009A / NT35510
+    - SEPS525
+    - RM68120
+    - R61529
 
 

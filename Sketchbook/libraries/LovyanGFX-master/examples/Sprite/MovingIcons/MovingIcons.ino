@@ -1,4 +1,11 @@
+#define LGFX_USE_V1
 #include <LovyanGFX.hpp>
+
+#define LGFX_AUTODETECT
+#include <LGFX_AUTODETECT.hpp>  // クラス"LGFX"を準備します
+// #include <lgfx_user/LGFX_ESP32_sample.hpp> // またはユーザ自身が用意したLGFXクラスを準備します
+
+static LGFX lcd;
 
 extern const unsigned short info[];
 extern const unsigned short alert[];
@@ -63,7 +70,6 @@ struct obj_info_t {
 static constexpr size_t obj_count = 50;
 static obj_info_t objects[obj_count];
 
-static LGFX lcd;
 static LGFX_Sprite sprites[2];
 static LGFX_Sprite icons[3];
 static int_fast16_t sprite_height;
@@ -72,20 +78,24 @@ void setup(void)
 {
   lcd.init();
 
+  if (lcd.width() < lcd.height())
+  {
+    lcd.setRotation(lcd.getRotation() ^ 1);
+  }
   lcd_width = lcd.width();
   lcd_height = lcd.height();
   obj_info_t *a;
   for (size_t i = 0; i < obj_count; ++i) {
     a = &objects[i];
     a->img = i % 3;
-    a->x = random(lcd_width);
-    a->y = random(lcd_height);
-    a->dx = random(1, 4) * (i & 1 ? 1 : -1);
-    a->dy = random(1, 4) * (i & 2 ? 1 : -1);
-    a->dr = random(1, 4) * (i & 2 ? 1 : -1);
+    a->x = rand() % lcd_width;
+    a->y = rand() % lcd_height;
+    a->dx = ((rand() & 3) + 1) * (i & 1 ? 1 : -1);
+    a->dy = ((rand() & 3) + 1) * (i & 2 ? 1 : -1);
+    a->dr = ((rand() & 3) + 1) * (i & 2 ? 1 : -1);
     a->r = 0;
-    a->z = (float)random(10, 20) / 10;
-    a->dz = (float)(random(1, 10)) / 100;
+    a->z = (float)((rand() % 10)+10) / 10;
+    a->dz = (float)((rand() % 10)+1) / 100;
   }
 
   uint32_t div = 2;
@@ -119,7 +129,6 @@ void setup(void)
   icons[2].pushImage(0, 0, closeWidth,  closeHeight, closeX);
 
   lcd.startWrite();
-  lcd.setAddrWindow(0, 0, lcd_width, lcd_height);
 }
 
 void loop(void)
@@ -144,20 +153,16 @@ void loop(void)
       sprites[flip].setTextColor(0xFFFFFFU);
       sprites[flip].printf("obj:%d  fps:%d", obj_count, fps);
     }
-    size_t len = sprite_height * lcd_width;
-    if (y + sprite_height > lcd_height) {
-      len = (lcd_height - y) * lcd_width;
-    }
-    lcd.pushPixelsDMA(sprites[flip].getBuffer(), len);
+    sprites[flip].pushSprite(&lcd, 0, y);
   }
+  lcd.display();
 
   ++frame_count;
-  sec = millis() / 1000;
+  sec = lgfx::millis() / 1000;
   if (psec != sec) {
     psec = sec;
     fps = frame_count;
     frame_count = 0;
-    lcd.setAddrWindow(0, 0, lcd.width(), lcd.height());
   }
 }
 
