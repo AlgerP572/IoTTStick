@@ -191,7 +191,7 @@ class M5LiteBase {
           dis.begin();
 
           // I2C Init
-          Wire1.begin(25, 21, 10000);
+          Wire1.begin(25, 21, (uint32_t) 10000);
         } else {
           // Other
           Wire1.begin(-1, -1);

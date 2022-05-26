@@ -636,7 +636,7 @@ void setup()
     if (useHat.devId == 3) //YellowHat
     {
         Serial.println("Init YellowHat");  
-        Wire.begin(hatSDA, hatSCL, 400000); //initialize the I2C interface 400kHz
+        Wire.begin(hatSDA, hatSCL, (uint32_t) 400000); //initialize the I2C interface 400kHz
         jsonDataObj = getDocPtr("/configdata/led.cfg", false);
         if (jsonDataObj != NULL)
         {
@@ -692,7 +692,7 @@ void setup()
           lnSerial->setBusyLED(stickLED, false);
           lnSerial->setLNCallback(callbackLocoNetMessage);
         } 
-        Wire.begin(hatSDA, hatSCL, 400000); //initialize the I2C interface
+        Wire.begin(hatSDA, hatSCL, (uint32_t) 400000); //initialize the I2C interface
         jsonDataObj = getDocPtr("/configdata/greenhat.cfg", true);
         if (jsonDataObj != NULL)
           if (jsonDataObj->containsKey("Modules"))
@@ -823,7 +823,7 @@ void setup()
       jsonDataObj = getDocPtr("/configdata/phcfg.cfg", false);
       if (jsonDataObj != NULL)
       {
-        Wire.begin(hatSDA, hatSCL, 400000); //initialize the I2C interface 400kHz
+        Wire.begin(hatSDA, hatSCL, (uint32_t) 400000); //initialize the I2C interface 400kHz
         Serial.println("Load Trainside Sensor"); 
         trainSensor = new IoTT_TrainSensor(&Wire);
         trainSensor->setTxCallback(sendMsg);
