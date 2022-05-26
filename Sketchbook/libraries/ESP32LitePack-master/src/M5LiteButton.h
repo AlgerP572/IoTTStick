@@ -34,17 +34,11 @@ class M5LiteButton {
       _Touch = Touch;
     }
 
-	uint8_t getPwrPin(void)
-	{
-		return _axp192->getPekPress();
-	}
-	
     uint8_t getPin(void) {
       if (_pin == -1) {
         return 0;
       } else if (_pin == 100) {
         // AXP192 Pek
-//        Serial.println(_axp192->getPekPress());
         return _axp192->getPekPress() != 0;
       } else if (_pin == 101) {
         // Touch A
