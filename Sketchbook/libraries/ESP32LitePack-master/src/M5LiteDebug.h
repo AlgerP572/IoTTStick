@@ -865,19 +865,36 @@ class M5LiteDebug {
 
       info.enable = true;
 
-      uint32_t rtc_reg = rtc_gpio_desc[pin].reg;
+      //TODO: need a define for backwards comaptibility
+      //uint32_t rtc_reg = rtc_gpio_desc[pin].reg;
+
+      // Latest version of ESP32 libs require this.
+      uint32_t rtc_reg = rtc_io_desc[pin].reg;
       if (rtc_reg) {
         uint32_t reg_val = ESP_REG(rtc_reg);
 
-        if (reg_val & rtc_gpio_desc[pin].mux) {
+        //TODO: need a define for backwards comaptibility
+        //if (reg_val & rtc_gpio_desc[pin].mux) {
+
+        // Latest version of ESP32 libs require this.
+        if (reg_val & rtc_io_desc[pin].mux) {
+        //
           info.adc = true;
         }
 
-        if (reg_val & rtc_gpio_desc[pin].pullup) {
+        //TODO: need a define for backwards comaptibility
+        //if (reg_val & rtc_gpio_desc[pin].pullup) {
+
+        // Latest version of ESP32 libs require this.
+        if (reg_val & rtc_io_desc[pin].pullup) {
           info.pullup = true;
         }
 
-        if (reg_val & rtc_gpio_desc[pin].pulldown) {
+        //TODO: need a define for backwards comaptibility
+        //if (reg_val & rtc_gpio_desc[pin].pulldown) {
+
+        // Latest version of ESP32 libs require this.
+        if (reg_val & rtc_io_desc[pin].pulldown) {
           info.pulldown = true;
         }
       }
