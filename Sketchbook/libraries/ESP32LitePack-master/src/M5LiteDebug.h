@@ -910,13 +910,17 @@ class M5LiteDebug {
         }
       }
 
-      if (ESP_REG(DR_REG_IO_MUX_BASE + esp32_gpioMux[pin].reg) & FUN_PU) {
-        info.pullup = true;
-      }
+      //TODO: need a define for backwards comaptibility
+      // if (ESP_REG(DR_REG_IO_MUX_BASE + esp32_gpioMux[pin].reg) & FUN_PU) {
+      //   info.pullup = true;
+      // }
 
-      if (ESP_REG(DR_REG_IO_MUX_BASE + esp32_gpioMux[pin].reg) & FUN_PD) {
-        info.pulldown = true;
-      }
+      // if (ESP_REG(DR_REG_IO_MUX_BASE + esp32_gpioMux[pin].reg) & FUN_PD) {
+      //   info.pulldown = true;
+      // }
+
+      // Latest version of ESP32 libs require this.
+      // What would go here or is the above now obsolete?
 
       if (GPIO.pin[pin].val & (1 << GPIO_PIN0_PAD_DRIVER_S)) {
         info.openDrain = true;
