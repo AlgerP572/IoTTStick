@@ -34,6 +34,11 @@ class M5LiteButton {
       _Touch = Touch;
     }
 
+    uint8_t getPwrPin(void)
+	  {
+		   return _axp192->getPekPress();
+    }
+
     uint8_t getPin(void) {
       if (_pin == -1) {
         return 0;
