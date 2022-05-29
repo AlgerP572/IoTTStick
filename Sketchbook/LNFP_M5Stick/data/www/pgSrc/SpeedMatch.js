@@ -1,7 +1,7 @@
 var locoDef; //parsed JMRI XML data
 var validLocoDef = false; //true if JMRI file is loaded
 var fileName = "";
-var throttleDef = {"DataType" : "ThrottleDef", "Version" : "1.0", "ProfName":"new profile", "VMax":80, "AtStep":90, "SpeedSteps":100, "GraphData" : {}, "FileName":""};
+var throttleDef = {"DataType" : "ThrottleDef", "Version" : "1.0", "ProfName":"new profile", "VMax":50, "AtStep":50, "SpeedSteps":128, "GraphData" : {}, "FileName":""};
 var validThrottleDef = true;
 var validTechSpeedDef = false; //true after speed analysis
 var validTableDef = false; //true after table caclulation
@@ -234,13 +234,17 @@ function setCVVal(sender)
 //--------------------------------------------------------------Throttle Profile functions
 function getMotorValueForSpeed(thisSpeed)
 {
-	var motorValue = [0,0];
+	var motorValue = [0,0];	
 	for (var j = 1; j <= 2; j++) //techSpeedProfileGraph.LineGraphs
 	{
-	//find speedstep that has desired speed
+		var canEngineMoveAtDesiredSpeed = false;
+
+		//find speedstep that has desired speed
 		for (var i = 0; i < techSpeedProfileGraph.LineGraphs[j].DataElements.length-1; i++)
+		{
 			if ((thisSpeed >= techSpeedProfileGraph.LineGraphs[j].DataElements[i].y) && ( thisSpeed <= techSpeedProfileGraph.LineGraphs[j].DataElements[i+1].y))
 			{
+				canEngineMoveAtDesiredSpeed = true;
 //				console.log(thisSpeed, i);
 				var y1 = techSpeedProfileGraph.LineGraphs[j].DataElements[i].y
 				var y2 = techSpeedProfileGraph.LineGraphs[j].DataElements[i+1].y
@@ -261,14 +265,26 @@ function getMotorValueForSpeed(thisSpeed)
 						motorValue[j-1] = thisSpeed > (y1 + (dy / 2)) ? i + 1 : i;
 				//times 2 for motor value
 				motorValue[j-1] *= 2; //adjust from 127 to 255 max value
+
+				// Sometimes rounding error creates a value larger than 255.
+				motorValue[j-1] = Math.min(motorValue[j-1], 255);
 				break;
 			}
+		}
+
+		if(canEngineMoveAtDesiredSpeed == false)
+		{
+			// Engine could not reach the desired speed.
+			// Just put in the max speed it can go...
+			motorValue[j-1] = 255;
+		}
 	}
 	return motorValue;
 }
 
 function getSpeedForThrottleStep(thisStep)
-{
+{		
+
 	var tStep = Math.round((thisStep / 27) * throttleProfileGraph.LineGraphs[0].ValsX[1]);
 	var lineSegment = 0;
 	for (var i = 0; i < throttleProfileGraph.LineGraphs[0].DataElements.length-1; i++)
@@ -282,7 +298,9 @@ function getSpeedForThrottleStep(thisStep)
 	var dx = throttleProfileGraph.LineGraphs[0].DataElements[lineSegment+1].x - throttleProfileGraph.LineGraphs[0].DataElements[lineSegment].x;
 	var dy = throttleProfileGraph.LineGraphs[0].DataElements[lineSegment+1].y - throttleProfileGraph.LineGraphs[0].DataElements[lineSegment].y;
 	var scaleSpeed = y1 + ((tStep - x1) * dy/dx);
-//	console.log(thisStep, tStep, lineSegment, x1, y1, dx, dy);
+
+	console.log(thisStep, tStep, lineSegment, x1, y1, dx, dy);
+
     if (configData[workCfg].Units == 1) //imperial
 		scaleSpeed *= 1.6;
 	scaleSpeed /= configData[workCfg].ScaleList[configData[workCfg].ScaleIndex].Scale;

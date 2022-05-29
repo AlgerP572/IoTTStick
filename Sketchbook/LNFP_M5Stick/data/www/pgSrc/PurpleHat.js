@@ -994,7 +994,8 @@ function calcTable(sender)
 		{
 			var targetSpeed = getSpeedForThrottleStep(j);
 			var targetLevel = getMotorValueForSpeed(targetSpeed);
-//			console.log(targetLevel);
+			console.log("Target speed:", targetSpeed);
+			console.log("Target level:", targetLevel);
 			newElement = JSON.parse(JSON.stringify(DataElementTemplate)); // = {"x":0,"y":0,"m":0};
 			newElement.x = j+1;
 			newElement.y = Math.round((targetLevel[0] + targetLevel[1])/2);
