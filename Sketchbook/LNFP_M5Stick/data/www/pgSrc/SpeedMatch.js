@@ -237,10 +237,14 @@ function getMotorValueForSpeed(thisSpeed)
 	var motorValue = [0,0];
 	for (var j = 1; j <= 2; j++) //techSpeedProfileGraph.LineGraphs
 	{
-	//find speedstep that has desired speed
+		var canEngineMoveAtDesiredSpeed = false;
+
+		//find speedstep that has desired speed
 		for (var i = 0; i < techSpeedProfileGraph.LineGraphs[j].DataElements.length-1; i++)
+		{
 			if ((thisSpeed >= techSpeedProfileGraph.LineGraphs[j].DataElements[i].y) && ( thisSpeed <= techSpeedProfileGraph.LineGraphs[j].DataElements[i+1].y))
 			{
+				canEngineMoveAtDesiredSpeed = true;
 //				console.log(thisSpeed, i);
 				var y1 = techSpeedProfileGraph.LineGraphs[j].DataElements[i].y
 				var y2 = techSpeedProfileGraph.LineGraphs[j].DataElements[i+1].y
@@ -261,8 +265,20 @@ function getMotorValueForSpeed(thisSpeed)
 						motorValue[j-1] = thisSpeed > (y1 + (dy / 2)) ? i + 1 : i;
 				//times 2 for motor value
 				motorValue[j-1] *= 2; //adjust from 127 to 255 max value
+
+				// Sometimes rounding error creates a value larger than 255.
+				motorValue[j-1] = Math.min(motorValue[j-1], 255);
 				break;
 			}
+
+			if(canEngineMoveAtDesiredSpeed == false)
+			{
+
+				// Engine could not reach the desired speed.
+				// Just put in the max speed it can go...
+				motorValue[j-1] = 255;
+			}
+		}
 	}
 	return motorValue;
 }
